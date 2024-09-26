@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/ticket_number_cell"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="0.9"
+            android:textSize="12sp"
+            android:gravity="center"
+            tools:text="G001" />
+
+        <View
+            android:id="@+id/stroke1"
+            android:layout_width="0.7dp"
+            android:layout_height="30dp"
+            android:background="@color/light_grey" />
+
+        <TextView
+            android:id="@+id/ticket_description_cell"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="0.9"
+            android:textSize="12sp"
+            android:gravity="center"
+            app:cardCornerRadius="0dp"
+            app:strokeWidth="1dp"
+            tools:text="Goat" />
+
+        <View
+            android:id="@+id/stroke2"
+            android:layout_width="0.7dp"
+            android:layout_height="30dp"
+            android:background="@color/light_grey" />
+
+        <TextView
+            android:id="@+id/ticket_status_cell"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:textSize="12sp"
+            android:layout_weight="0.9"
+            android:gravity="center"
+            app:cardCornerRadius="0dp"
+            app:strokeWidth="1dp"
+            tools:text="Status" />
+
+        <View
+            android:id="@+id/stroke3"
+            android:layout_width="1dp"
+            android:layout_height="30dp"
+            android:background="@color/light_grey" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="2.3"
+            android:gravity="center">
+
+
+
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        android:background="@color/light_grey"
+        app:layout_constraintTop_toBottomOf="@id/layout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

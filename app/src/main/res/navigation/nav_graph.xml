@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+<!--    <fragment-->
+<!--        android:id="@+id/test"-->
+<!--        android:name="com.example.slaughterhouse.ui.Test"-->
+<!--        tools:layout="@layout/test"-->
+<!--        />-->
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.slaughterhouse.ui.HomeFragment"
+        tools:layout="@layout/home_fragment"
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.example.slaughterhouse.ui.DetailsFragment"
+        tools:layout="@layout/details_fragment"
+        android:label="detailsFragment" >
+        <action
+            android:id="@+id/action_detailsFragment_to_homeFragment2"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.slaughterhouse.ui.LoginFragment"
+        tools:layout="@layout/login_fragment"
+        android:label="loginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+
+
+</navigation>

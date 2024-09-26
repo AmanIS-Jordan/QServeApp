@@ -1,0 +1,43 @@
+<!-- res/drawable/custom_radio_button.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Checked state -->
+    <item android:state_checked="true">
+        <layer-list>
+            <!-- Outer border circle -->
+            <item>
+                <shape android:shape="oval">
+                    <size
+                        android:width="15dp"
+                        android:height="15dp" />
+                    <stroke
+                        android:width="1dp"
+                        android:color="@color/white" /> <!-- Border color -->
+                    <solid android:color="@android:color/transparent" />
+                </shape>
+            </item>
+            <!-- Inner filled circle with padding -->
+            <item
+                android:left="3dp"
+                android:right="3dp"
+                android:top="3dp"
+                android:bottom="3dp">
+                <shape android:shape="oval">
+                    <solid android:color="@color/white" /> <!-- Inner circle color -->
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+
+    <!-- Unchecked state -->
+    <item android:state_checked="false">
+        <shape android:shape="oval">
+            <size
+                android:width="15dp"
+                android:height="15dp" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/white" /> <!-- Border color for unchecked state -->
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</selector>
