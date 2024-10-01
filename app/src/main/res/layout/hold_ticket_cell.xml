@@ -77,21 +77,17 @@
             android:layout_height="match_parent"
             android:background="@color/light_grey" />
 
-        <LinearLayout
-            android:id="@+id/layout_status"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_weight="2.3"
-            android:gravity="center">
 
             <androidx.cardview.widget.CardView
-                android:layout_marginStart="2dp"
-                android:id="@+id/proceed"
+                android:layout_marginEnd="6dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="6dp"
+                android:id="@+id/recall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.76"
+                android:layout_weight="2.3"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
                 android:backgroundTint="@color/green"
                 app:cardCornerRadius="10dp"
                 >
@@ -104,62 +100,13 @@
                     android:paddingBottom="3dp"
                     android:layout_marginStart="1dp"
                     android:gravity="center"
-                    android:text="Proceed"
+                    android:text="Recall"
                     android:textColor="@color/white"
                     android:textSize="12sp"
                     />
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:layout_marginStart="2dp"
-                android:id="@+id/hold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.76"
-                android:backgroundTint="@color/yellow"
-                app:cardCornerRadius="10dp"
-                >
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:layout_marginStart="1dp"
-                    android:gravity="center"
-                    android:text="Hold"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    />
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
-                android:id="@+id/reject"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.76"
-                android:backgroundTint="@color/red"
-                app:cardCornerRadius="10dp"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:layout_marginStart="1dp"
-                    android:gravity="center"
-                    android:id="@+id/tv_reject"
-                    android:text="Reject"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    />
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
 
 
     </LinearLayout>

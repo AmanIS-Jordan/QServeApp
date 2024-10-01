@@ -35,34 +35,22 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="25dp"
         android:text="Counter"
+        android:layout_marginStart="10dp"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:visibility="gone" />
+        />
 
-
-    <LinearLayout
+    <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@color/blue"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:orientation="vertical">
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/counter_radio"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical"
-            android:visibility="visible"
-            >
-        </RadioGroup>
-
-    </LinearLayout>
-
+        android:id="@+id/counter_radio"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        >
+    </RadioGroup>
 
 
 

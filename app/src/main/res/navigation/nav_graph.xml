@@ -29,6 +29,16 @@
         <action
             android:id="@+id/action_detailsFragment_to_homeFragment2"
             app:destination="@id/homeFragment" />
+        <argument
+            android:name="counter"
+            app:argType="string" />
+        <argument
+            android:name="branchCode"
+            app:argType="string" />
+        <argument
+            android:name="username"
+            app:argType="string" />
+
     </fragment>
 
     <fragment

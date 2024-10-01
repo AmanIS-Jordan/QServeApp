@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        checkLoginStatus()
+        checkAddedURL()
 
 
         binding.btnSubmit.setOnClickListener {
@@ -40,22 +40,26 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun checkLoginStatus() {
-        // Check if the user is logged in
-        val isLoggedIn = PreferenceManager.isLoggedIn(requireContext())
+    private fun checkAddedURL() {
 
-        if (isLoggedIn) {
+        val isAddedUrl = PreferenceManager.isAddedURL(requireContext())
+
+        if (isAddedUrl) {
             // Navigate to the Details screen if logged in
             findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
         }
     }
+
+
 
     private fun checkUrlAndNavigate() {
         if (isEditTextEmpty(binding.etUrl)) {
             Toast.makeText(requireContext(), "please fill the URL", Toast.LENGTH_SHORT).show()
         }
         else{
-            PreferenceManager.setLoggedIn(requireContext(), true)
+            val url = binding.etUrl.text.toString()
+            PreferenceManager.saveBaseUrl(requireContext(),url , true)
+
             findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
         }
     }

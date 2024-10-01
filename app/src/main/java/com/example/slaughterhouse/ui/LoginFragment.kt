@@ -22,6 +22,7 @@ import com.example.slaughterhouse.R
 import com.example.slaughterhouse.data.model.BranchesResponse
 import com.example.slaughterhouse.data.model.CountersResponse
 import com.example.slaughterhouse.databinding.LoginFragmentBinding
+import com.example.slaughterhouse.util.PreferenceManager
 import com.example.slaughterhouse.util.Resource
 import com.example.slaughterhouse.viewmodel.BranchViewModel
 import com.example.slaughterhouse.viewmodel.CountersViewModel
@@ -36,9 +37,9 @@ class LoginFragment : Fragment() {
     protected lateinit var branchViewModel: BranchViewModel
     protected lateinit var countersViewModel: CountersViewModel
 
+    var counterId : String ?=null
     var username: String? = null
     var password: String? = null
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +52,8 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        checkIsloggedin()
 
         loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
         branchViewModel = ViewModelProvider(this).get(BranchViewModel::class.java)
@@ -65,9 +68,7 @@ class LoginFragment : Fragment() {
             if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
                 callLoginApi()
 
-//                findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
             } else {
-                // Show an error message if one or both fields are empty
                 Toast.makeText(
                     requireContext(),
                     "Please fill in both username and password",
@@ -82,18 +83,52 @@ class LoginFragment : Fragment() {
 
     }
 
+    private fun checkIsloggedin() {
+        val isLoggedin = PreferenceManager.isLoggedIn(requireContext())
+
+        if (isLoggedin){
+            val username = PreferenceManager.getUserName(requireContext())
+            val counterId = PreferenceManager.getCounterId(requireContext())
+            val branchCode = PreferenceManager.getSelectedBranch(requireContext())
+            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDetailsFragment(counterId ?:"",branchCode?:"",username ?:""))
+        }
+    }
+
+    private fun callLoginApi() {
+        Log.v("username and pass", username + password)
+
+        loginViewModel.login(username ?: "", password ?: "")
+    }
+
+    private fun callBranchApi() {
+        username?.let { branchViewModel.getBranches(it) }
+    }
+
+
+    private fun callApiWithSelectedBranch(username: String?, branchCode: String?) {
+        if (username != null) {
+            if (branchCode != null) {
+                countersViewModel.getCounter(username, branchCode)
+            }
+            Log.v("branch code", branchCode.toString())
+        }
+    }
+
+
     private fun observeViewModelCounters(radioGroup: RadioGroup) {
-        countersViewModel.result.observe(viewLifecycleOwner){counterInfo ->
-            when (counterInfo){
-                is Resource.Success->{
+        countersViewModel.result.observe(viewLifecycleOwner) { counterInfo ->
+            when (counterInfo) {
+                is Resource.Success -> {
                     val counters = counterInfo.data // Replace with your actual data type
                     if (counters != null) {
-                        displayCountersAsRadioButtons(counters,radioGroup)
+                        displayCountersAsRadioButtons(counters, radioGroup)
                     }
 
-                    Toast.makeText(requireContext(), "get counters success", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "get counters success", Toast.LENGTH_SHORT)
+                        .show()
                     Log.v("counter", counterInfo.data.toString())
                 }
+
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), "get counters Failed", Toast.LENGTH_SHORT)
                         .show()
@@ -109,33 +144,6 @@ class LoginFragment : Fragment() {
     }
 
 
-    private fun displayCountersAsRadioButtons(counters: List<CountersResponse> , radioGroup: RadioGroup) {
-         radioGroup = view?.findViewById(R.id.counter_radio)
-        radioGroup?.removeAllViews() // Clear previous views
-
-        counters.forEach { counter ->
-            val radioButton = RadioButton(requireContext()).apply {
-                text = counter.CounterEn // Ensure this is not null
-                id = View.generateViewId()
-                layoutParams = RadioGroup.LayoutParams(
-                    RadioGroup.LayoutParams.WRAP_CONTENT,
-                    RadioGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    marginEnd = 16 // Add margin between buttons
-                }
-            }
-
-            // Add the RadioButton to the RadioGroup
-            radioGroup?.addView(radioButton)
-            Log.v("radio group", radioGroup.toString())
-
-        }
-    }
-
-
-
-
-
 
     private fun observeViewModelBranches() {
         branchViewModel.result.observe(viewLifecycleOwner) { branchInfo ->
@@ -146,7 +154,7 @@ class LoginFragment : Fragment() {
                     Toast.makeText(requireContext(), "get Branches success", Toast.LENGTH_SHORT)
                         .show()
 
-                    //     branchInfo.data?.let { openBranchesPopup(it) }
+                    //    branchInfo.data?.let { openBranchesPopup(it) }
 
                     Log.v("BranchObserver", "Branch data: ${branchInfo.data}")
                     branchInfo.data?.let { openBranchesPopup(it) }
@@ -165,12 +173,6 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun callLoginApi() {
-        Log.v("username and pass", username + password)
-
-        loginViewModel.login(username ?: "", password ?: "")
-    }
-
 
     private fun observeViewModelLogin() {
         loginViewModel.result.observe(viewLifecycleOwner) { userData ->
@@ -180,8 +182,6 @@ class LoginFragment : Fragment() {
                     Log.v("result for the login", "Success response")
 
                     callBranchApi()
-                    //    findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
-
                 }
 
                 is Resource.Error -> {
@@ -196,16 +196,6 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun callBranchApi() {
-        username?.let { branchViewModel.getBranches(it) }
-    }
-
-
-    private fun callApiWithSelectedBranch(username: String?, branchCode: Int?) {
-        if (username != null) {
-            countersViewModel.getCounter(username,branchCode.toString())
-        }
-    }
 
 
 
@@ -214,13 +204,12 @@ class LoginFragment : Fragment() {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.branch_popup)
 
-
-        val radioGroup: RadioGroup = dialog.findViewById(R.id.counter_radio)
-
+        var selectedBranchCode : String ?=null
         // Initialize views
         val spinner: Spinner = dialog.findViewById(R.id.spinner)
         val cancelButton: Button = dialog.findViewById(R.id.branch_cancel_btn)
         val saveButton: Button = dialog.findViewById(R.id.branch_save_btn)
+        val radioGroup: RadioGroup = dialog.findViewById(R.id.counter_radio)
 
         // Check if branches list is not null
         branches?.let {
@@ -261,7 +250,7 @@ class LoginFragment : Fragment() {
             firstBranch?.let {
                 Log.d("Selected Branch", "Default branch selected: ${it.BranchNameAr}")
                 // Call your API with the first branch
-                callApiWithSelectedBranch(username, it.BranchCode)
+                //    callApiWithSelectedBranch(username, it.BranchCode)
 
             }
 
@@ -275,17 +264,17 @@ class LoginFragment : Fragment() {
                     val selectedBranch = branches[position]
                     Log.d("Selected Branch", "Branch selected: ${selectedBranch?.BranchNameAr}")
 
-                    callApiWithSelectedBranch(username, selectedBranch?.BranchCode)
+                    selectedBranchCode = selectedBranch?.BranchCode.toString()
+                    callApiWithSelectedBranch(username, selectedBranchCode)
 
-                    // Call API or perform any action with the selected branch if needed
+
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
                     // Do nothing when nothing is selected
                 }
-
-
             }
+
             observeViewModelCounters(radioGroup)
 
 
@@ -295,12 +284,59 @@ class LoginFragment : Fragment() {
             }
 
             saveButton.setOnClickListener {
-                findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
-                dialog.dismiss()
+                // Check if any counter is selected
+                val selectedCounterId = radioGroup.checkedRadioButtonId
+                if (selectedCounterId == -1) {
+                    // No counter selected, show a toast message
+                    Toast.makeText(requireContext(), "Please select a counter", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    // Counter is selected, navigate to another fragment
+                    val selectedCounter = dialog.findViewById<RadioButton>(selectedCounterId)
+                    val selectedCounterText = selectedCounter.text.toString()
+
+                    // You can use selectedCounterText as needed, for example, log it
+                    Log.d("Selected Counter", "Counter selected: $selectedCounterText")
+
+
+                    //save user info
+                   // PreferenceManager.isLoggedIn(requireContext())
+                  PreferenceManager.saveUserInfo(requireContext(),username?:"", counterId?:"" , selectedBranchCode?:"", true)
+
+                    findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDetailsFragment(
+                        counterId?:"",selectedBranchCode?:"" , username ?:""))
+
+                    // Dismiss the dialog
+                    dialog.dismiss()
+                }
+
+                // Show the dialog
+            }
+            dialog.show()
+
+        }
+    }
+
+
+    private fun displayCountersAsRadioButtons(
+        counters: List<CountersResponse>,
+        radioGroup: RadioGroup
+    ) {
+        radioGroup.removeAllViews() // Clear previous radio buttons
+
+
+        counters.forEach { counter ->
+            val radioButton = RadioButton(requireContext()).apply {
+                text = counter.CounterEn // Ensure this is not null
+                counterId = counter.CounterId.toString()
+                id = View.generateViewId()
+
             }
 
-            // Show the dialog
-            dialog.show()
+            // Add the RadioButton to the RadioGroup
+            radioGroup?.addView(radioButton)
+            Log.v("radio group", radioGroup.toString())
+
         }
     }
 
