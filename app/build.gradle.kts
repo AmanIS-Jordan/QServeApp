@@ -95,9 +95,4 @@ dependencies {
     implementation ("androidx.cardview:cardview:1.0.0")
 
 
-
-
-    // ML Kit Barcode Scanning dependency
-  //  implementation ("com.google.mlkit:barcode-scanning:17.0.0")
-
 }

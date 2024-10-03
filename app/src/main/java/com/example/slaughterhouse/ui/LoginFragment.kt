@@ -1,14 +1,20 @@
 package com.example.slaughterhouse.ui
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Spinner
@@ -27,6 +33,7 @@ import com.example.slaughterhouse.util.Resource
 import com.example.slaughterhouse.viewmodel.BranchViewModel
 import com.example.slaughterhouse.viewmodel.CountersViewModel
 import com.example.slaughterhouse.viewmodel.LoginViewModel
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,6 +57,7 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -80,7 +88,29 @@ class LoginFragment : Fragment() {
         observeViewModelLogin()
         observeViewModelBranches()
 
+        // Add touch listener to hide keyboard when clicking outside the EditText
+        view.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val v = requireActivity().currentFocus
+                if (v is EditText) {
+                    val outRect = Rect()
+                    v.getGlobalVisibleRect(outRect)
+                    if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                        v.clearFocus()
+                        hideKeyboard()
+                    }
+                }
+            }
+            false
+        }
 
+
+    }
+
+    fun hideKeyboard() {
+        val inputMethodManager = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = requireActivity().currentFocus ?: View(requireActivity())
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun checkIsloggedin() {
@@ -96,7 +126,8 @@ class LoginFragment : Fragment() {
 
     private fun callLoginApi() {
         Log.v("username and pass", username + password)
-
+            val url = PreferenceManager.getBaseUrl(requireContext())
+        Log.v("url", url?:"")
         loginViewModel.login(username ?: "", password ?: "")
     }
 

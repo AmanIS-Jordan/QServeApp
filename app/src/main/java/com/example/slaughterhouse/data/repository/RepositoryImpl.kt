@@ -18,9 +18,9 @@ import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(private val apiInterface: ApiInterface) : Repository {
 
-    override suspend fun login(username: String, password: String): Resource<LoginSucessResponse> {
+    override suspend fun login( username: String, password: String): Resource<LoginSucessResponse> {
         return try {
-            val response = apiInterface.loginApi(username, password)
+            val response = apiInterface.loginApi( username, password)
             Log.v("UserRepositoryImpl", "success")
 
             Resource.Success(response) // Assuming a successful response

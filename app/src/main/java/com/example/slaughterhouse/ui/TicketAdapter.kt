@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.slaughterhouse.R
 import com.example.slaughterhouse.data.model.PendingTicketsResponse
+import com.example.slaughterhouse.util.PreferenceManager
 
 class TicketAdapter(
     private var ticketList: MutableList<PendingTicketsResponse>,
@@ -86,6 +87,8 @@ class TicketAdapter(
         if (item.status == 2 || selectedPosition == currentPosition) {
             holder.itemView.setBackgroundColor(colorHighlight)
             lockedPosition = currentPosition // Lock the highlighted row
+            PreferenceManager.saveSelectedTicket(context, item.ticketNO, true)
+
         } else {
             holder.itemView.setBackgroundColor(if (currentPosition % 2 == 0) colorGrey else colorLightPurple)
         }
@@ -101,12 +104,10 @@ class TicketAdapter(
             holder.holdBtn.setOnClickListener { holdTicket(item) }
             holder.rejectBtn.setOnClickListener { rejectTicket(item) }
 
-            holder.rejecttext.isClickable = true
-            holder.rejectBtn.isClickable = true
+
         } else {
             // Disable buttons if row is not selected
-            holder.rejecttext.isClickable = false
-            holder.rejectBtn.isClickable = false
+
         }
     }
 

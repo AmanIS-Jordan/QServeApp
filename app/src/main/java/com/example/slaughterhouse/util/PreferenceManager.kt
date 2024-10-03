@@ -4,26 +4,37 @@ import android.content.Context
 import android.content.SharedPreferences
 
 object PreferenceManager {
-
     private const val PREF_NAME = "user_prefs"
     private const val KEY_NAME = "user_name"
     private const val COUNTER_ID = "counter_id"
     private const val SELECTED_BRANCH = "selected_branch"
-
     private const val KEY_PASSWORD = "user_password"
     private const val KEY_BASE_URL = "base_url"
     private const val KEY_IS_LOGGED_IN = "is_logged_in"
     private const val KEY_IS_ADDED_URL = "is_AddedUrl"
-
     private const val KEY_IS_SELECTED_TICKET = "is_selected_ticket"
     private const val KEY_SELECTED_TICKET = "selected_ticket"
-
-
-
-
-    // Initialize SharedPreferences
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+    }
+    fun saveBaseUrl(context: Context, baseUrl: String , isAddedUrl : Boolean) {
+        val editor = getPreferences(context).edit()
+        editor.putString(KEY_BASE_URL, baseUrl)
+        editor.putBoolean(KEY_IS_ADDED_URL, isAddedUrl)
+        editor.apply()
+    }
+    fun isAddedURL(context: Context): Boolean {
+        return getPreferences(context).getBoolean(KEY_IS_ADDED_URL, false)
+    }
+    fun getBaseUrl(context: Context): String? {
+        return getPreferences(context).getString(KEY_BASE_URL, "")
+    }
+    fun clearUrl(context: Context) {
+        val editor = getPreferences(context).edit()
+        editor.remove(KEY_BASE_URL)
+        editor.remove(KEY_IS_ADDED_URL) // Optionally clear this as well
+        editor.apply()
+        editor.commit()
     }
 
 
@@ -47,6 +58,11 @@ object PreferenceManager {
         return getPreferences(context).getBoolean(KEY_IS_SELECTED_TICKET, false)
     }
 
+    fun clearSelectedTicket(context: Context) {
+        val editor = getPreferences(context).edit()
+        editor.remove(KEY_SELECTED_TICKET)
+        editor.apply()
+    }
 
 
     // Save user login status
@@ -78,22 +94,7 @@ object PreferenceManager {
     }
 
     // Save base URL
-    fun saveBaseUrl(context: Context, baseUrl: String , isAddedUrl : Boolean) {
-        val editor = getPreferences(context).edit()
-        editor.putString(KEY_BASE_URL, baseUrl)
-        editor.putBoolean(KEY_IS_ADDED_URL, isAddedUrl)
 
-        editor.apply()
-    }
-
-    fun isAddedURL(context: Context): Boolean {
-        return getPreferences(context).getBoolean(KEY_IS_ADDED_URL, false)
-    }
-
-    // Get saved base URL
-    fun getBaseUrl(context: Context): String? {
-        return getPreferences(context).getString(KEY_BASE_URL, "https://defaulturl.com") // Default value if not set
-    }
 
     // Get saved user name
     fun getUserName(context: Context): String? {
@@ -129,9 +130,5 @@ object PreferenceManager {
         editor.apply()
     }
 
-    fun clearUrl(context: Context) {
-        val editor = getPreferences(context).edit()
-        editor.remove(KEY_BASE_URL)
-        editor.apply()
-    }
+
 }

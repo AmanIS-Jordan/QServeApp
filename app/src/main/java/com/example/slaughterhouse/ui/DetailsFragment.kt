@@ -1,6 +1,11 @@
 package com.example.slaughterhouse.ui
 
+import android.app.AlertDialog
 import android.app.Dialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +16,7 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -35,6 +41,7 @@ import com.example.slaughterhouse.viewmodel.RecallTicketViewModel
 import com.example.slaughterhouse.viewmodel.SelectedTicketViewModel
 import com.example.slaughterhouse.viewmodel.SkipTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Scanner
 
 @AndroidEntryPoint
 class DetailsFragment : Fragment(), OnClickListener {
@@ -51,18 +58,20 @@ class DetailsFragment : Fragment(), OnClickListener {
     private val getSelectedTicketViewModel: SelectedTicketViewModel by viewModels()
     private val randomCallViewModel: RandomCallViewModel by viewModels()
 
-    var pendingRadioButton : RadioButton ?=null
-    var holdRadioButton : RadioButton ?=null
+    var pendingRadioButton: RadioButton? = null
+    var holdRadioButton: RadioButton? = null
+
+    private lateinit var scanner: Scanner
+
+    private lateinit var barcodeTextView: TextView
 
 
     private val refreshHandler = Handler() // Handler to schedule tasks
     private val refreshRunnable = object : Runnable {
         override fun run() {
-
-
             callPendingTicketsApi()
             // Schedule the handler to run again after 10 minutes
-            refreshHandler.postDelayed(this, 5000) // 10 minutes
+            refreshHandler.postDelayed(this, 5000) // 5 seconds
         }
     }
 
@@ -73,12 +82,23 @@ class DetailsFragment : Fragment(), OnClickListener {
     private val navArgs by navArgs<DetailsFragmentArgs>()
 
 
+
+
+
+
+
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = DetailsFragmentBinding.inflate(inflater, container, false)
+
+        barcodeTextView = binding.scanText
+
         return binding.root
     }
 
@@ -115,6 +135,7 @@ class DetailsFragment : Fragment(), OnClickListener {
                 holdRadioButton?.isChecked = false
                 callPendingTicketsApi()
                 binding.recyclerview.adapter = null // Clear previous adapter
+                refreshHandler.postDelayed(refreshRunnable, 5000)
 
             }
         }
@@ -125,37 +146,40 @@ class DetailsFragment : Fragment(), OnClickListener {
                 pendingRadioButton?.isChecked = false
                 callHoldTicketListAPi(counter, branchCode)
                 binding.recyclerview.adapter = null // Clear previous adapter
+                refreshHandler.removeCallbacks(refreshRunnable)
 
             }
         }
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        if (pendingRadioButton?.isChecked == true) {
-            // When Pending is selected, uncheck Hold button
-            holdRadioButton?.isChecked = false
-            callPendingTicketsApi()
-            refreshHandler.removeCallbacks(refreshRunnable)
-            binding.recyclerview.adapter = null // Clear previous adapter
-        }
 
     }
 
 
 
-    override fun onPause() {
-        super.onPause()
 
-        if (pendingRadioButton?.isChecked == true) {
-            // When Pending is selected, uncheck Hold button
-            holdRadioButton?.isChecked = false
-            callPendingTicketsApi()
-            refreshHandler.removeCallbacks(refreshRunnable)
-            binding.recyclerview.adapter = null // Clear previous adapter
-        }
-    }
+
+
+
+
+
+
+//    override fun onResume() {
+//        super.onResume()
+//        if (pendingRadioButton?.isChecked == true) {
+//            refreshHandler.postDelayed(refreshRunnable, 5000)
+//        }
+//    }
+//
+//    fun checkIfAnyTicketIsSelected(): Boolean {
+//        return PreferenceManager.isSelectedTicket(requireContext())
+//    }
+//
+//
+//    override fun onPause() {
+//        super.onPause()
+//
+//        refreshHandler.removeCallbacks(refreshRunnable) // Stop refreshing when fragment is paused
+//
+//    }
 
     private fun observerGetSelectedTicketApi() {
         getSelectedTicketViewModel.result.observe(viewLifecycleOwner) { selectedTicket ->
@@ -211,8 +235,8 @@ class DetailsFragment : Fragment(), OnClickListener {
 
                         callPendingTicketsApi()
                         callHoldCountAPi()
-                        binding.ticketNumber.text = ""
-                        binding.queueName.text = ""
+//                        binding.ticketNumber.text = ""
+//                        binding.queueName.text = ""
 
                     }
                 }
@@ -230,6 +254,13 @@ class DetailsFragment : Fragment(), OnClickListener {
 
         }
     }
+
+    fun clearSelectedTicket() {
+        PreferenceManager.clearSelectedTicket(requireContext())
+        PreferenceManager.setSelectedTicket(requireContext(), false)
+
+    }
+
 
     private fun observerHoldTicketListViewModel() {
         holdTicketList.result.observe(viewLifecycleOwner) { holdList ->
@@ -272,6 +303,9 @@ class DetailsFragment : Fragment(), OnClickListener {
                 is Resource.Success -> {
                     Log.v("lists", ticketList.data.toString())
                     ticketList.data?.let { pendingTicketAdapter(it.toMutableList()) }
+
+
+
                 }
 
                 is Resource.Error -> {
@@ -288,25 +322,50 @@ class DetailsFragment : Fragment(), OnClickListener {
     }
 
     private fun holdTicketAdapter(holdTicket: MutableList<HoldTicketsList>) {
-        holdTicketAdapter = HoldTicketAdapter(holdTicket, onItemSelected = { ticketInfo ->
-            binding.ticketNumber.text = ticketInfo.ticketNo
-            binding.queueName.text = ticketInfo.qServiceEn
-        },
-            recallTicket = { ticket ->
-                Toast.makeText(requireContext(), "recall", Toast.LENGTH_SHORT).show()
+        holdTicketAdapter = HoldTicketAdapter(holdTicket
+//         ,   onItemSelected = { ticketInfo ->
+//            binding.ticketNumber.text = ticketInfo.ticketNo
+//            binding.queueName.text = ticketInfo.qServiceEn
+//
+//            PreferenceManager.saveSelectedTicket(requireContext(),ticketInfo.ticketNo,true)
+//
+//
+//            callPendingTicketsApi()
+//        }
+            , recallTicket = { ticket ->
+
+                val isAnyTicketSelected = PreferenceManager.isSelectedTicket(requireContext())
+
+                if (isAnyTicketSelected) {
+                    Toast.makeText(
+                        requireContext(),
+                        "There is another ticket in progress",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(requireContext(), "recall", Toast.LENGTH_SHORT).show()
+
+                    recallTicketViewModel.recallTicket(
+                        navArgs.counter,
+                        navArgs.username,
+                        ticket.ticketNo,
+                        ticket.id,
+                        ticket.ticketReferenceNo
+                    )
+
+                    observerRecallTicketViewModel(ticket)
+                    Log.v("refer num", ticket.ticketReferenceNo)
+
+                    callPendingTicketsApi()
+                    PreferenceManager.saveSelectedTicket(requireContext(), ticket.ticketNo, true)
+
+                    binding.ticketNumber.text = ticket.ticketNo
+                    binding.queueName.text = ticket.qServiceEn
 
 
 
-                recallTicketViewModel.recallTicket(
-                    navArgs.counter,
-                    navArgs.username,
-                    ticket.ticketNo,
-                    ticket.id,
-                    ticket.ticketReferenceNo
-                )
+                }
 
-                observerRecallTicketViewModel(ticket)
-                Log.v("refer num", ticket.ticketReferenceNo)
 
             }
         )
@@ -322,6 +381,9 @@ class DetailsFragment : Fragment(), OnClickListener {
                 binding.ticketNumber.text = ticketInfo.ticketNO
                 binding.queueName.text = ticketInfo.qServiceEn
                 callRandomCallApi(ticketInfo)
+
+                PreferenceManager.saveSelectedTicket(requireContext(), ticketInfo.ticketNO, true)
+
 
             },
             proceedTicket = { ticket ->
@@ -368,22 +430,22 @@ class DetailsFragment : Fragment(), OnClickListener {
             ticketInfo.refNo ?: "",
             navArgs.branchCode
         )
-        Log.v("ref num" , ticketInfo.refNo?:"")
-        Log.v("ref num" , navArgs.username)
-        Log.v("ref num" , navArgs.username)
-        Log.v("ref num" , navArgs.username)
-        Log.v("ref num" , navArgs.username)
+        Log.v("ref num", ticketInfo.refNo ?: "")
+        Log.v("ref num", navArgs.username)
+        Log.v("ref num", navArgs.username)
+        Log.v("ref num", navArgs.username)
+        Log.v("ref num", navArgs.username)
 
         observerRandomCallViewModel()
     }
 
     private fun observerRandomCallViewModel() {
-        randomCallViewModel.result.observe(viewLifecycleOwner){
+        randomCallViewModel.result.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
                     Log.v("random call response", "success")
-                    binding.ticketNumber.text = ""
-                    binding.queueName.text = ""
+//                    binding.ticketNumber.text = ""
+//                    binding.queueName.text = ""
                 }
 
                 is Resource.Error -> {
@@ -422,6 +484,8 @@ class DetailsFragment : Fragment(), OnClickListener {
 
                     binding.ticketNumber.text = ""
                     binding.queueName.text = ""
+
+                    clearSelectedTicket()
                 }
 
                 is Resource.Error -> {
@@ -493,6 +557,8 @@ class DetailsFragment : Fragment(), OnClickListener {
                         "Ticket Number ${rejectTicket.ticketNO} has been Rejected"
                     binding.ticketNumber.text = ""
                     binding.queueName.text = ""
+
+                    clearSelectedTicket()
                 }
 
                 is Resource.Error -> {
@@ -531,6 +597,8 @@ class DetailsFragment : Fragment(), OnClickListener {
 
                     binding.ticketNumber.text = ""
                     binding.queueName.text = ""
+
+                    clearSelectedTicket()
 
 
                 }
@@ -593,20 +661,66 @@ class DetailsFragment : Fragment(), OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.setting.id -> {
-                findNavController().navigate(R.id.homeFragment)
-                PreferenceManager.clearUrl(requireContext())
-                PreferenceManager.setURl(requireContext(), false)
-                PreferenceManager.setLoggedIn(requireContext(), false)
-                PreferenceManager.clearUserInfo(requireContext())
+                val isAnyTicketSelected = PreferenceManager.isSelectedTicket(requireContext())
+
+                if (isAnyTicketSelected) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Sorry, please complete the selected ticked first",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    PreferenceManager.clearUrl(requireContext())
+                    PreferenceManager.setURl(requireContext(), false)
+                    val isadded = PreferenceManager.isAddedURL(requireContext())
+                    Log.v("is added url", isadded.toString())
+                    PreferenceManager.setLoggedIn(requireContext(), false)
+                    PreferenceManager.clearUserInfo(requireContext())
+//                    findNavController().navigate(R.id.homeFragment)
+
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Clear Setting")
+                        .setMessage("Are you sure you want to reset the setting?")
+                        .setPositiveButton("Yes") { dialog, _ ->
+                            // Restart the app
+                            restartApp()
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton("No") { dialog, _ ->
+                            dialog.dismiss() // Do nothing, just close the dialog
+                        }
+                        .show()
+                }
             }
 
             binding.tvLogout.id -> {
-                findNavController().navigate(R.id.loginFragment)
-                PreferenceManager.setLoggedIn(requireContext(), false)
-                PreferenceManager.clearUserInfo(requireContext())
+                val isAnyTicketSelected = PreferenceManager.isSelectedTicket(requireContext())
+
+                if (isAnyTicketSelected) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Sorry, please complete the selected ticket to be able to log out.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    findNavController().navigate(R.id.loginFragment)
+                    PreferenceManager.setLoggedIn(requireContext(), false)
+                    PreferenceManager.clearUserInfo(requireContext())
+                }
+
             }
 
         }
+    }
+    private fun restartApp() {
+        val intent = requireActivity().baseContext.packageManager
+            .getLaunchIntentForPackage(requireActivity().baseContext.packageName)
+        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (intent != null) {
+            startActivity(intent)
+        }
+        requireActivity().finish()
+        Runtime.getRuntime().exit(0)
     }
 
 

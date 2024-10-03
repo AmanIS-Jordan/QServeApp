@@ -13,7 +13,7 @@ import com.example.slaughterhouse.data.model.HoldTicketsList
 
 class HoldTicketAdapter (
     private var holdTicketList: MutableList<HoldTicketsList>,
-    private val onItemSelected: (HoldTicketsList) -> Unit , // Callback to return selected item
+  //  private val onItemSelected: (HoldTicketsList) -> Unit , // Callback to return selected item
     private val recallTicket : (holdTicketsList : HoldTicketsList) -> Unit
     ) : RecyclerView.Adapter<HoldTicketAdapter.ItemViewHolder>() {
 
@@ -25,18 +25,18 @@ class HoldTicketAdapter (
             val ticketStatus: TextView = itemView.findViewById(R.id.ticket_status_cell)
             val recallBtn : CardView = itemView.findViewById(R.id.recall)
 
-            init {
-                itemView.setOnClickListener {
-                    // Update the selected position and notify the adapter to refresh
-                    notifyItemChanged(selectedPosition) // Refresh previously selected item
-                    selectedPosition = adapterPosition
-                    notifyItemChanged(selectedPosition) // Refresh currently selected item
-
-                    // Trigger the callback to return the selected item
-                    val selectedItem = holdTicketList[selectedPosition]
-                    onItemSelected(selectedItem)
-                }
-            }
+//            init {
+//                itemView.setOnClickListener {
+//                    // Update the selected position and notify the adapter to refresh
+//                    notifyItemChanged(selectedPosition) // Refresh previously selected item
+//                    selectedPosition = adapterPosition
+//                    notifyItemChanged(selectedPosition) // Refresh currently selected item
+//
+//                    // Trigger the callback to return the selected item
+//                    val selectedItem = holdTicketList[selectedPosition]
+//                    onItemSelected(selectedItem)
+//                }
+//            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
