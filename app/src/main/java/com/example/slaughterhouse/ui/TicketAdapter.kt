@@ -88,6 +88,7 @@ class TicketAdapter(
             holder.itemView.setBackgroundColor(colorHighlight)
             lockedPosition = currentPosition // Lock the highlighted row
             PreferenceManager.saveSelectedTicket(context, item.ticketNO, true)
+            onItemSelected(item) //
 
         } else {
             holder.itemView.setBackgroundColor(if (currentPosition % 2 == 0) colorGrey else colorLightPurple)

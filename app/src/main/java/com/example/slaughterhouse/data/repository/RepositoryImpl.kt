@@ -12,6 +12,7 @@ import com.example.slaughterhouse.data.model.SelectedTicketReponse
 import com.example.slaughterhouse.data.remote.ApiInterface
 import com.example.slaughterhouse.util.Resource
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import retrofit2.HttpException
 import retrofit2.Response
 import javax.inject.Inject
@@ -20,37 +21,39 @@ class UserRepositoryImpl @Inject constructor(private val apiInterface: ApiInterf
 
     override suspend fun login( username: String, password: String): Resource<LoginSucessResponse> {
         return try {
-            val response = apiInterface.loginApi( username, password)
+            val response = apiInterface.loginApi(username, password)
             Log.v("UserRepositoryImpl", "success")
 
             Resource.Success(response) // Assuming a successful response
 
 
         } catch (e: HttpException) {
-            // Parse the error response body
             val errorBody = e.response()?.errorBody()?.string()
-            val errorResponse = Gson().fromJson(errorBody, LoginErrorResponse::class.java)
+            val errorResponse = try {
+                Gson().fromJson(errorBody, LoginErrorResponse::class.java)
+            } catch (jsonException: JsonSyntaxException) {
+                Log.e("Login Error", "JSON Parsing Error: ${jsonException.message}")
+                LoginErrorResponse(null, null, "check the base url or login info", null, null)
+            }
 
             // Access the status code
             val statusCode = e.code()
 
             // Handle specific status codes
             when (statusCode) {
-
                 404 -> Resource.Error(errorResponse.messageEn ?: "Resource not found.")
                 401 -> Resource.Error(errorResponse.messageEn ?: "Invalid credentials.")
-                500 -> Resource.Error(
-                    errorResponse.messageEn ?: "Server error. Please try again later."
-                )
-
-                else -> Resource.Error(errorResponse.messageEn ?: "Unknown error occurred")
+                500 -> Resource.Error(errorResponse.messageEn ?: "Server error. Please try again later.")
+                else -> Resource.Error(errorResponse.messageEn ?: "Unknown error occurred.")
             }
+
+        } catch (e: JsonSyntaxException) {
+            Log.e("Login Error", "JSON Parsing Error: ${e.message}")
+            Resource.Error(e.message ?: "Login failed due to a server error. Please try again later.")
 
         } catch (e: Exception) {
             Log.v("UserRepositoryImpl", e.message.toString())
-
             Resource.Error(e.message ?: "An error occurred")
-
         }
     }
 

@@ -23,15 +23,13 @@ class LoginViewModel @Inject constructor(private val apiRepository : Repository)
 
             when (response)
             {
-                is Resource.Success ->
-                {
-                    result.postValue(
-                        if (response.data != null) {
-                            Resource.Success(response.data) // Non-null case
-                        } else {
-                            Resource.Error("Data is null") // Handle null case
-                        }
-                    )
+                is Resource.Success -> {
+                    // Check if the data is valid
+                    response.data?.let { data ->
+                        result.postValue(Resource.Success(data)) // Post success with data
+                    } ?: run {
+                        result.postValue(Resource.Error("Data is null")) // Handle null case
+                    }
                 }
                 is Resource.Error->{
                     result.postValue(Resource.Error(response.message))

@@ -110,6 +110,6 @@ interface ApiInterface {
 
 
     companion object {
-        const val BASE_URL = "http://192.168.30.50/APIPub2509/"
+      //  const val BASE_URL = "http://192.168.30.50/APIPub2509/"
     }
 }

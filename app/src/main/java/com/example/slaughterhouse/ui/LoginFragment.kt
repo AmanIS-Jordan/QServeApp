@@ -3,6 +3,8 @@ package com.example.slaughterhouse.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -43,6 +45,8 @@ class LoginFragment : Fragment() {
     private lateinit var loginViewModel: LoginViewModel
     protected lateinit var branchViewModel: BranchViewModel
     protected lateinit var countersViewModel: CountersViewModel
+    var savedCounterId : String ?=null
+    private var hasRestarted = false
 
     var counterId : String ?=null
     var username: String? = null
@@ -60,6 +64,9 @@ class LoginFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+
 
         checkIsloggedin()
 
@@ -85,11 +92,20 @@ class LoginFragment : Fragment() {
             }
         }
 
+        binding.setting.setOnClickListener {
+            val url = PreferenceManager.getBaseUrl(requireContext())
+            PreferenceManager.clearUrl(requireContext())
+            PreferenceManager.setURl(requireContext(), false)
+            findNavController().navigate(R.id.action_loginFragment_to_homeFragment2)
+        }
+
+
+
         observeViewModelLogin()
         observeViewModelBranches()
 
         // Add touch listener to hide keyboard when clicking outside the EditText
-        view.setOnTouchListener { _, event ->
+        view?.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 val v = requireActivity().currentFocus
                 if (v is EditText) {
@@ -326,16 +342,19 @@ class LoginFragment : Fragment() {
                     val selectedCounter = dialog.findViewById<RadioButton>(selectedCounterId)
                     val selectedCounterText = selectedCounter.text.toString()
 
+
+
                     // You can use selectedCounterText as needed, for example, log it
                     Log.d("Selected Counter", "Counter selected: $selectedCounterText")
 
 
+
                     //save user info
                    // PreferenceManager.isLoggedIn(requireContext())
-                  PreferenceManager.saveUserInfo(requireContext(),username?:"", counterId?:"" , selectedBranchCode?:"", true)
+                  PreferenceManager.saveUserInfo(requireContext(),username?:"", savedCounterId?:"" , selectedBranchCode?:"", true)
 
                     findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDetailsFragment(
-                        counterId?:"",selectedBranchCode?:"" , username ?:""))
+                        savedCounterId?:"",selectedBranchCode?:"" , username ?:""))
 
                     // Dismiss the dialog
                     dialog.dismiss()
@@ -369,6 +388,11 @@ class LoginFragment : Fragment() {
             Log.v("radio group", radioGroup.toString())
 
         }
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            val selectedRadioButton = group.findViewById<RadioButton>(checkedId)
+            savedCounterId = counters.find { it.CounterEn == selectedRadioButton.text }?.CounterId.toString()
+            Log.d("Selected Counter ID", savedCounterId ?: "None")
+        }
     }
 
 
@@ -377,8 +401,6 @@ class LoginFragment : Fragment() {
             findNavController().navigateUp()
         }
     }
-
-
 }
 
 

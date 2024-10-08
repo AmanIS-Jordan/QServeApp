@@ -10,6 +10,11 @@ object PreferenceManager {
     private const val SELECTED_BRANCH = "selected_branch"
     private const val KEY_PASSWORD = "user_password"
     private const val KEY_BASE_URL = "base_url"
+
+    private const val KEY_URL = "url"
+    private const val KEY_IS_ADDED_URL_2 = "is_AddedUrl"
+
+
     private const val KEY_IS_LOGGED_IN = "is_logged_in"
     private const val KEY_IS_ADDED_URL = "is_AddedUrl"
     private const val KEY_IS_SELECTED_TICKET = "is_selected_ticket"
@@ -23,6 +28,21 @@ object PreferenceManager {
         editor.putBoolean(KEY_IS_ADDED_URL, isAddedUrl)
         editor.apply()
     }
+    fun isSavedAnyURL(context: Context): Boolean {
+        return getPreferences(context).getBoolean(KEY_IS_ADDED_URL_2, false)
+    }
+
+    fun saveUrl(context: Context, baseUrl: String , isAddedUrl : Boolean) {
+        val editor = getPreferences(context).edit()
+        editor.putString(KEY_URL, baseUrl)
+        editor.putBoolean(KEY_IS_ADDED_URL_2, isAddedUrl)
+        editor.apply()
+    }
+    fun getUrl(context: Context): String? {
+        return getPreferences(context).getString(KEY_URL, "")
+    }
+
+
     fun isAddedURL(context: Context): Boolean {
         return getPreferences(context).getBoolean(KEY_IS_ADDED_URL, false)
     }
@@ -53,7 +73,6 @@ object PreferenceManager {
 
 
 
-    // Check if the user is logged in
     fun isSelectedTicket(context: Context): Boolean {
         return getPreferences(context).getBoolean(KEY_IS_SELECTED_TICKET, false)
     }

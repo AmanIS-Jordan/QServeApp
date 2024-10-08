@@ -81,15 +81,6 @@ class DetailsFragment : Fragment(), OnClickListener {
 
     private val navArgs by navArgs<DetailsFragmentArgs>()
 
-
-
-
-
-
-
-
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -647,6 +638,7 @@ class DetailsFragment : Fragment(), OnClickListener {
 
     private fun init() {
         binding.counterNumber.text = navArgs.counter
+        Log.v("counter",navArgs.counter)
         binding.setting.setOnClickListener(this)
         binding.tvLogout.setOnClickListener(this)
         binding.tvName.text = navArgs.username
@@ -676,14 +668,14 @@ class DetailsFragment : Fragment(), OnClickListener {
                     Log.v("is added url", isadded.toString())
                     PreferenceManager.setLoggedIn(requireContext(), false)
                     PreferenceManager.clearUserInfo(requireContext())
-//                    findNavController().navigate(R.id.homeFragment)
 
                     AlertDialog.Builder(requireContext())
-                        .setTitle("Clear Setting")
-                        .setMessage("Are you sure you want to reset the setting?")
+                        .setTitle("Change Setting")
+                        .setMessage("Are you sure you want to edit the setting?")
                         .setPositiveButton("Yes") { dialog, _ ->
                             // Restart the app
-                            restartApp()
+                            //restartApp()
+                            findNavController().navigate(R.id.homeFragment)
                             dialog.dismiss()
                         }
                         .setNegativeButton("No") { dialog, _ ->
@@ -712,16 +704,16 @@ class DetailsFragment : Fragment(), OnClickListener {
 
         }
     }
-    private fun restartApp() {
-        val intent = requireActivity().baseContext.packageManager
-            .getLaunchIntentForPackage(requireActivity().baseContext.packageName)
-        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        if (intent != null) {
-            startActivity(intent)
-        }
-        requireActivity().finish()
-        Runtime.getRuntime().exit(0)
-    }
+//    private fun restartApp() {
+//        val intent = requireActivity().baseContext.packageManager
+//            .getLaunchIntentForPackage(requireActivity().baseContext.packageName)
+//        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//        if (intent != null) {
+//            startActivity(intent)
+//        }
+//        requireActivity().finish()
+//        Runtime.getRuntime().exit(0)
+//    }
 
 
 }

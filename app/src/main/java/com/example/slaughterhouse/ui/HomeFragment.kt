@@ -2,6 +2,8 @@ package com.example.slaughterhouse.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -12,12 +14,15 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.slaughterhouse.MainActivity
 import com.example.slaughterhouse.R
 import com.example.slaughterhouse.databinding.HomeFragmentBinding
 import com.example.slaughterhouse.util.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -45,6 +50,8 @@ class HomeFragment : Fragment() {
             checkUrlAndNavigate()
         }
 
+        var storedUrl = PreferenceManager.getUrl(requireContext())
+        binding.etUrl.setText(storedUrl)
 
 
         // Add touch listener to hide keyboard when clicking outside the EditText
@@ -65,8 +72,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun checkAddedURL() {
-
         val isAddedUrl = PreferenceManager.isAddedURL(requireContext())
+        Log.v("is saved", isAddedUrl.toString())
 
         if (isAddedUrl) {
             // Navigate to the Details screen if logged in
@@ -86,13 +93,50 @@ class HomeFragment : Fragment() {
                 Toast.makeText(requireContext(), "URL must start with 'http://' or 'https://' and end with '/'", Toast.LENGTH_SHORT).show()
             } else {
                 PreferenceManager.saveBaseUrl(requireContext(), url, true)
+                PreferenceManager.saveUrl(requireContext(),url,true)
 
-                Log.v("url base" , url)
-                findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
+
+                val isAnyUrlSaved = PreferenceManager.isSavedAnyURL(requireContext())
+                if (isAnyUrlSaved) {
+                     showConfirmationDialog()
+                }
+
+
+
+
             }
         }
     }
 
+    private fun showConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+     //       .setTitle("save Changes")
+            .setMessage("The Added URl has been saved")
+            .setPositiveButton("OK") { dialog, _ ->
+
+
+
+                // Get the intent to restart the app (main activity)
+                val intent = requireActivity().baseContext.packageManager
+                    .getLaunchIntentForPackage(requireActivity().baseContext.packageName)
+                intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                // Restart the app by relaunching the main activity
+                if (intent != null) {
+                    startActivity(intent)
+                }
+                // Kill the current process to force the app to restart fresh
+                android.os.Process.killProcess(android.os.Process.myPid())
+
+
+
+                dialog.dismiss()
+
+                findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
+
+            }
+            .show()
+    }
 
     fun hideKeyboard() {
         val inputMethodManager = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
