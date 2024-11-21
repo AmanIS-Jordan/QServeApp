@@ -97,15 +97,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
-                            android:padding="3dp"
                             android:layout_marginEnd="5dp"
                             android:layout_gravity="center"
                             android:gravity="center"
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="13dp"
-                                android:layout_height="13dp"
+                                android:layout_width="17dp"
+                                android:layout_height="17dp"
                                 android:src="@drawable/logout" />
 
                             <TextView
@@ -115,7 +114,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/tv_logout"
-                                android:textSize="10sp"
+                                android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:text="Log out" />
 
@@ -430,7 +429,7 @@
                     app:cardCornerRadius="10dp"
                     app:cardElevation="4dp">
 
-                    <TextView
+                    <EditText
                         android:id="@+id/scan_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -440,6 +439,9 @@
                         android:padding="3dp"
                         android:textColor="@color/black"
                         android:textSize="13sp" />
+
+
+
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -486,9 +488,9 @@
         <TextView
             android:layout_width="match_parent"
             android:textSize="12sp"
+            android:textColor="@color/white"
             android:layout_height="wrap_content"
             android:id="@+id/status_description"
-            android:text="Description for the selected status will appear here"
             android:layout_gravity="center"
             android:gravity="center"
             />
@@ -541,7 +543,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:gravity="center"
                 android:text="Ticket Number"
                 android:textColor="@color/white" />
@@ -562,7 +564,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Description"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/white" />
         </com.google.android.material.card.MaterialCardView>
@@ -582,7 +584,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Status"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/white" />
         </com.google.android.material.card.MaterialCardView>
@@ -598,7 +600,7 @@
             app:strokeWidth="0.7dp">
 
             <TextView
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

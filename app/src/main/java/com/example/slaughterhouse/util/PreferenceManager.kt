@@ -22,22 +22,25 @@ object PreferenceManager {
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
-    fun saveBaseUrl(context: Context, baseUrl: String , isAddedUrl : Boolean) {
+
+    fun saveBaseUrl(context: Context, baseUrl: String, isAddedUrl: Boolean) {
         val editor = getPreferences(context).edit()
         editor.putString(KEY_BASE_URL, baseUrl)
         editor.putBoolean(KEY_IS_ADDED_URL, isAddedUrl)
         editor.apply()
     }
+
     fun isSavedAnyURL(context: Context): Boolean {
         return getPreferences(context).getBoolean(KEY_IS_ADDED_URL_2, false)
     }
 
-    fun saveUrl(context: Context, baseUrl: String , isAddedUrl : Boolean) {
+    fun saveUrl(context: Context, baseUrl: String, isAddedUrl: Boolean) {
         val editor = getPreferences(context).edit()
         editor.putString(KEY_URL, baseUrl)
         editor.putBoolean(KEY_IS_ADDED_URL_2, isAddedUrl)
         editor.apply()
     }
+
     fun getUrl(context: Context): String? {
         return getPreferences(context).getString(KEY_URL, "")
     }
@@ -46,9 +49,11 @@ object PreferenceManager {
     fun isAddedURL(context: Context): Boolean {
         return getPreferences(context).getBoolean(KEY_IS_ADDED_URL, false)
     }
+
     fun getBaseUrl(context: Context): String? {
         return getPreferences(context).getString(KEY_BASE_URL, "")
     }
+
     fun clearUrl(context: Context) {
         val editor = getPreferences(context).edit()
         editor.remove(KEY_BASE_URL)
@@ -64,14 +69,16 @@ object PreferenceManager {
         editor.apply()
     }
 
-    fun saveSelectedTicket(context: Context, selectedTicket: String , isSelectedTicket: Boolean) {
+    fun saveSelectedTicket(context: Context, selectedTicket: String, isSelectedTicket: Boolean) {
         val editor = getPreferences(context).edit()
         editor.putString(KEY_SELECTED_TICKET, selectedTicket)
         editor.putBoolean(KEY_IS_SELECTED_TICKET, isSelectedTicket)
         editor.apply()
     }
 
-
+    fun getSelectedTicket(context: Context): String? {
+        return getPreferences(context).getString(KEY_SELECTED_TICKET, "")
+    }
 
     fun isSelectedTicket(context: Context): Boolean {
         return getPreferences(context).getBoolean(KEY_IS_SELECTED_TICKET, false)
@@ -103,12 +110,18 @@ object PreferenceManager {
     }
 
     // Save user name and password
-    fun saveUserInfo(context: Context, name: String, counterId : String , selectedBranch: String, isLoggedIn: Boolean) {
+    fun saveUserInfo(
+        context: Context,
+        name: String,
+        counterId: String,
+        selectedBranch: String,
+        isLoggedIn: Boolean
+    ) {
         val editor = getPreferences(context).edit()
         editor.putString(KEY_NAME, name)
         editor.putString(COUNTER_ID, counterId)
         editor.putString(SELECTED_BRANCH, selectedBranch)
-        editor.putBoolean(KEY_IS_LOGGED_IN,isLoggedIn)
+        editor.putBoolean(KEY_IS_LOGGED_IN, isLoggedIn)
         editor.apply() // Save data asynchronously
     }
 
@@ -119,7 +132,6 @@ object PreferenceManager {
     fun getUserName(context: Context): String? {
         return getPreferences(context).getString(KEY_NAME, null)
     }
-
 
 
     // Get saved user password
@@ -135,8 +147,6 @@ object PreferenceManager {
     fun getSelectedBranch(context: Context): String? {
         return getPreferences(context).getString(SELECTED_BRANCH, null)
     }
-
-
 
 
     // Clear user info (e.g., when logging out)

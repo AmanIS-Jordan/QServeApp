@@ -5,6 +5,12 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
+    <fragment
+        android:id="@+id/testFragment"
+        android:name="com.example.slaughterhouse.ui.TestFragment"
+        tools:layout="@layout/test_fragment"
+        />
+
 <!--    <fragment-->
 <!--        android:id="@+id/test"-->
 <!--        android:name="com.example.slaughterhouse.ui.Test"-->
@@ -18,7 +24,11 @@
         android:label="HomeFragment" >
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"
+
+            />
 
     </fragment>
 
@@ -49,7 +59,10 @@
         android:label="loginFragment" >
         <action
             android:id="@+id/action_loginFragment_to_detailsFragment"
-            app:destination="@id/detailsFragment" />
+            app:destination="@id/detailsFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"
+            />
         <action
             android:id="@+id/action_loginFragment_to_homeFragment2"
             app:destination="@id/homeFragment" />

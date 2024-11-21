@@ -171,8 +171,8 @@ class LoginFragment : Fragment() {
                         displayCountersAsRadioButtons(counters, radioGroup)
                     }
 
-                    Toast.makeText(requireContext(), "get counters success", Toast.LENGTH_SHORT)
-                        .show()
+                  //  Toast.makeText(requireContext(), "get counters success", Toast.LENGTH_SHORT)
+                  //      .show()
                     Log.v("counter", counterInfo.data.toString())
                 }
 
@@ -198,8 +198,8 @@ class LoginFragment : Fragment() {
             when (branchInfo) {
                 is Resource.Success -> {
 
-                    Toast.makeText(requireContext(), "get Branches success", Toast.LENGTH_SHORT)
-                        .show()
+//                    Toast.makeText(requireContext(), "get Branches success", Toast.LENGTH_SHORT)
+//                        .show()
 
                     //    branchInfo.data?.let { openBranchesPopup(it) }
 

@@ -16,57 +16,54 @@ import com.example.slaughterhouse.data.model.PendingTicketsResponse
 import com.example.slaughterhouse.util.PreferenceManager
 
 class TicketAdapter(
-    private var ticketList: MutableList<PendingTicketsResponse>,
-    private val onItemSelected: (PendingTicketsResponse) -> Unit ,// Callback to return selected item
-    private val proceedTicket : (pendingTicketsResponse : PendingTicketsResponse ) -> Unit ,
-    private val holdTicket : (pendingTicketsResponse : PendingTicketsResponse ) -> Unit ,
-    private val rejectTicket : (pendingTicketsResponse : PendingTicketsResponse ) -> Unit
-
-    ) : RecyclerView.Adapter<TicketAdapter.ItemViewHolder>() {
-
-    private var selectedPosition = RecyclerView.NO_POSITION // Keep track of selected position
-    private var lockedPosition: Int? = null // Keep track of the locked (highlighted) position
-
+    var ticketList: MutableList<PendingTicketsResponse>,
+    private val onItemSelected: (PendingTicketsResponse) -> Unit, // Callback to return selected item
+    private val proceedTicket: (pendingTicketsResponse: PendingTicketsResponse) -> Unit,
+    private val holdTicket: (pendingTicketsResponse: PendingTicketsResponse) -> Unit,
+    private val rejectTicket: (pendingTicketsResponse: PendingTicketsResponse) -> Unit,
+    private val showProceed: String, // "1" to show, "0" to hide
+    private val showHold: String,
+    private val showReject: String
+) : RecyclerView.Adapter<TicketAdapter.ItemViewHolder>() {
 
 
+
+
+    private var selectedPosition = RecyclerView.NO_POSITION // Track selected position
+    private var lockedPosition: Int? = null // Track locked position (highlighted item)
+
+    @SuppressLint("NotifyDataSetChanged")
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ticketNumber: TextView = itemView.findViewById(R.id.ticket_number_cell)
         val ticketDescription: TextView = itemView.findViewById(R.id.ticket_description_cell)
         val ticketStatus: TextView = itemView.findViewById(R.id.ticket_status_cell)
-        val proceedBtn : CardView = itemView.findViewById(R.id.proceed)
-        val holdBtn : CardView = itemView.findViewById(R.id.hold)
-        val rejectBtn : CardView = itemView.findViewById(R.id.reject)
-        val rejecttext : TextView = itemView.findViewById(R.id.tv_reject)
-
-        val layout : LinearLayout = itemView.findViewById(R.id.layout_status)
+        val proceedBtn: CardView = itemView.findViewById(R.id.proceed)
+        val holdBtn: CardView = itemView.findViewById(R.id.hold)
+        val rejectBtn: CardView = itemView.findViewById(R.id.reject)
+        val rejectText: TextView = itemView.findViewById(R.id.tv_reject)
+        val layout: LinearLayout = itemView.findViewById(R.id.layout_status)
 
         init {
             itemView.setOnClickListener {
                 if (lockedPosition == null) {
-                    // If no row is locked (highlighted), allow selection
+                    // If no item is locked, allow selection
                     if (selectedPosition == adapterPosition) {
-                        // Unhighlight the selected row if clicked again
+                        // Unhighlight selected item if clicked again
                         selectedPosition = RecyclerView.NO_POSITION
                         lockedPosition = null
                     } else {
-                        // Highlight the clicked row
+                        // Lock the selected item
                         selectedPosition = adapterPosition
-                        onItemSelected(ticketList[selectedPosition]) // Call the callback when an item is selected
-
+                        lockedPosition = selectedPosition // Lock the row
+                        onItemSelected(ticketList[selectedPosition]) // Return selected item
                     }
                     notifyDataSetChanged() // Refresh the list
-                } else if (lockedPosition == adapterPosition) {
-                    // Unhighlight if the same locked row is clicked again
-                    lockedPosition = null
-                    selectedPosition = RecyclerView.NO_POSITION
-                    notifyDataSetChanged()
                 }
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        // Inflate the item layout and create the ViewHolder
         val view = LayoutInflater.from(parent.context).inflate(R.layout.ticket_cell, parent, false)
         return ItemViewHolder(view)
     }
@@ -83,13 +80,15 @@ class TicketAdapter(
 
         val item = ticketList[currentPosition]
 
-        // Check the item status and highlight if status == 2 or it's the selected row
-        if (item.status == 2 || selectedPosition == currentPosition) {
+        holder.proceedBtn.visibility = if (showProceed == "1") View.VISIBLE else View.GONE
+        holder.holdBtn.visibility = if (showHold == "1") View.VISIBLE else View.GONE
+        holder.rejectBtn.visibility = if (showReject == "1") View.VISIBLE else View.GONE
+
+        // Check the item status and lock the position if needed
+        if (item.status == 2 || lockedPosition == currentPosition || selectedPosition == currentPosition) {
             holder.itemView.setBackgroundColor(colorHighlight)
             lockedPosition = currentPosition // Lock the highlighted row
             PreferenceManager.saveSelectedTicket(context, item.ticketNO, true)
-            onItemSelected(item) //
-
         } else {
             holder.itemView.setBackgroundColor(if (currentPosition % 2 == 0) colorGrey else colorLightPurple)
         }
@@ -97,31 +96,55 @@ class TicketAdapter(
         // Set ticket info
         holder.ticketNumber.text = item.ticketNO
         holder.ticketDescription.text = "${item.qServiceEn}\n${item.qServiceAr}"
-        holder.ticketStatus.text = if (item.status == 2 || selectedPosition == currentPosition) "Selected" else "Pending"
+        holder.ticketStatus.text = if (item.status == 2 || lockedPosition == currentPosition || selectedPosition == currentPosition) "Selected" else "Pending"
 
-        // Button interactions only when status == 2 or the row is selected
-        if (item.status == 2 || selectedPosition == currentPosition) {
+        // Button interactions when item is locked/selected
+        if (lockedPosition == currentPosition || selectedPosition == currentPosition) {
             holder.proceedBtn.setOnClickListener { proceedTicket(item) }
             holder.holdBtn.setOnClickListener { holdTicket(item) }
             holder.rejectBtn.setOnClickListener { rejectTicket(item) }
-
-
         } else {
-            // Disable buttons if row is not selected
-
+            // Disable buttons when not selected
+            holder.proceedBtn.setOnClickListener(null)
+            holder.holdBtn.setOnClickListener(null)
+            holder.rejectBtn.setOnClickListener(null)
         }
     }
 
-    override fun getItemCount(): Int {
-        // Return the total number of items
-        return ticketList.size
-    }
+    override fun getItemCount(): Int = ticketList.size
 
+    // Method to remove the selected item and unlock other items
     fun removeItemById(ticketId: String) {
         val position = ticketList.indexOfFirst { it.id.toString() == ticketId }
         if (position != -1) {
             ticketList.removeAt(position)
             notifyItemRemoved(position)
+
+            // If the removed ticket was the locked one, clear the lock
+            if (lockedPosition == position) {
+                lockedPosition = null
+                selectedPosition = RecyclerView.NO_POSITION
+            }
+        }
+    }
+
+
+    // Optional: Programmatically lock a specific ticket (e.g., from API response)
+    fun lockTicketById(ticketId: String) {
+        val position = ticketList.indexOfFirst { it.id.toString() == ticketId }
+        if (position != -1) {
+            lockedPosition = position
+            selectedPosition = position
+            notifyDataSetChanged() // Refresh the list to reflect locked item
+        }
+    }
+    fun selectTicketByNumber(ticketNumber: String) {
+        val position = ticketList.indexOfFirst { it.ticketNO == ticketNumber }
+        if (position != -1) {
+            lockedPosition = position
+            selectedPosition = position
+            onItemSelected(ticketList[position]) // Trigger the selection callback with the selected item
+            notifyDataSetChanged() // Refresh the list to reflect selection
         }
     }
 }

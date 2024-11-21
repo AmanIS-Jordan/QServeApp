@@ -23,7 +23,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.9"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:gravity="center"
             android:layout_gravity="center"
             tools:text="G001" />
@@ -42,7 +42,7 @@
             android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:layout_weight="0.9"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:textColor="@color/white"
             android:gravity="center"
             app:cardCornerRadius="0dp"
@@ -62,7 +62,7 @@
             android:id="@+id/ticket_status_cell"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:layout_gravity="center"
             android:layout_weight="0.9"
             android:textColor="@color/white"
@@ -78,16 +78,20 @@
             android:background="@color/light_grey" />
 
         <LinearLayout
+            android:padding="4dp"
             android:id="@+id/layout_status"
             android:layout_marginTop="3dp"
             android:layout_marginBottom="3dp"
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
             android:layout_weight="2.3"
             android:gravity="center">
 
             <androidx.cardview.widget.CardView
                 android:layout_marginStart="2dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
                 android:id="@+id/proceed"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -97,21 +101,23 @@
                 >
 
                 <TextView
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:layout_marginStart="1dp"
                     android:gravity="center"
-                    android:text="Proceed"
+                    android:text="Complete"
                     android:textColor="@color/white"
-                    android:textSize="12sp"
+                    android:textSize="25sp"
+                    android:textStyle="bold"
                     />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:layout_marginStart="2dp"
+                android:layout_marginStart="5dp"
                 android:id="@+id/hold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -124,18 +130,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:layout_marginStart="1dp"
                     android:gravity="center"
                     android:text="Hold"
                     android:textColor="@color/white"
-                    android:textSize="12sp"
+                    android:textSize="25sp"
+                    android:textStyle="bold"
                     />
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
                 android:id="@+id/reject"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -148,14 +155,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:layout_marginStart="1dp"
                     android:gravity="center"
                     android:id="@+id/tv_reject"
                     android:text="Reject"
                     android:textColor="@color/white"
-                    android:textSize="12sp"
+                    android:textSize="25sp"
+                    android:textStyle="bold"
                     />
             </androidx.cardview.widget.CardView>
 
