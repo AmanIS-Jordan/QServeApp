@@ -618,6 +618,9 @@ class DetailsFragment : Fragment(), OnClickListener {
                     binding.ticketNumber.text = ticket.ticketNo
                     binding.queueName.text = ticket.qServiceEn
 
+                    refreshHandler.removeCallbacks(refreshRunnable) // Clear any existing tasks
+                    refreshHandler.post(refreshRunnable) // Schedule the refresh task
+
 
                 }
 

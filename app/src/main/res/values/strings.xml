@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">Slaughterhouse</string>
+<!--    <string name="app_name">Slaughterhouse</string>-->
+
+    <string name="app_name">Aman QServe</string>
+
+
+
+    <!--    <string name="app_name">Sharjah Police QMS Tablet</string>-->
+
 </resources>
