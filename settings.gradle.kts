@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Slaughterhouse"
+rootProject.name = "QServeApp"
 include(":app")
  
